@@ -1,0 +1,30 @@
+name: Build mkey
+on: 
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Lấy code về
+        uses: actions/checkout@v4
+      
+      - name: Cài XcodeGen
+        run: brew install xcodegen
+        
+      - name: Nặn file project
+        run: xcodegen
+        
+      - name: Build App (Release)
+        run: xcodebuild -project mkey.xcodeproj -scheme mkey -configuration Release SYMROOT=$PWD/build
+        
+      - name: Nén nguyên con App lại thành 1 cục zip
+        run: |
+          cd build/Release
+          zip -r mkey-sieu-cap.zip mkey.app
+        
+      - name: Gửi hàng nguyên đai nguyên kiện về
+        uses: actions/upload-artifact@v4
+        with:
+          name: mkey-app-cua-tao
+          path: build/Release/mkey-sieu-cap.zip
